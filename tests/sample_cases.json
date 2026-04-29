@@ -122,7 +122,7 @@
   {
     "id": "CASE-016",
     "symptoms": "high fever, yellowing of eyes",
-    "vitals": {"hb": 8.5},
+    "vitals": {"temp_c": 39.5},
     "weeks": 26,
     "expected_risk": "YELLOW",
     "key_sign": "Jaundice in pregnancy"
@@ -133,7 +133,7 @@
     "vitals": {},
     "weeks": 30,
     "expected_risk": "GREEN",
-    "key_sign": "Physiological oedema"
+    "key_sign": "Physiological oedema — no vitals concern"
   },
   {
     "id": "CASE-018",
@@ -181,7 +181,7 @@
     "vitals": {"bp_sys": 118, "bp_dia": 76},
     "weeks": 20,
     "expected_risk": "GREEN",
-    "key_sign": "Mild headache confuser — not a danger sign without severity or hypertension"
+    "key_sign": "CONFUSER: Mild headache without severity or hypertension is not a danger sign"
   },
   {
     "id": "CASE-024",
@@ -199,7 +199,6 @@
     "expected_risk": "YELLOW",
     "key_sign": "Fever with reduced foetal activity — dual YELLOW signs"
   },
-
   {
     "id": "CASE-026",
     "symptoms": "severe headache, blurred vision (Hindi input)",
@@ -227,14 +226,13 @@
     "key_sign": "Normal early pregnancy — Hindi code-mix input",
     "voice_input": "16 hafte pregnant, sirf subah ki ulti aur halka ji ghabrana. Koi aur takleef nahi."
   },
-
   {
     "id": "CASE-029",
     "symptoms": "convulsions, loss of consciousness (narrative)",
     "vitals": {"bp_sys": 170, "bp_dia": 115},
     "weeks": 35,
     "expected_risk": "RED",
-    "key_sign": "Eclampsia — ASHA diary narrative input",
+    "key_sign": "Eclampsia — ASHA diary narrative",
     "voice_input": "I visited Meena, 35 weeks pregnant. Her husband said she had a fit last night — shook all over and went unconscious for a few minutes. When I measured BP it was 170/115. She is very scared."
   },
   {
@@ -243,17 +241,16 @@
     "vitals": {"bp_sys": 142, "bp_dia": 92},
     "weeks": 30,
     "expected_risk": "YELLOW",
-    "key_sign": "Early pre-eclampsia warning — ASHA diary narrative input",
+    "key_sign": "Early pre-eclampsia warning — ASHA diary narrative",
     "voice_input": "Visited patient today — 30 weeks pregnant. She has had a headache for two days. I noticed her face looked puffy and hands were swollen. BP measured 142/92. Not sure how serious this is."
   },
-
   {
     "id": "CASE-031",
     "symptoms": "mild heartburn, frequent urination",
     "vitals": {},
     "weeks": 14,
     "expected_risk": "GREEN",
-    "key_sign": "Normal first trimester symptoms — confuser GREEN"
+    "key_sign": "Normal first trimester — confuser GREEN"
   },
   {
     "id": "CASE-032",
@@ -263,14 +260,13 @@
     "expected_risk": "YELLOW",
     "key_sign": "Fever just above 38C threshold — borderline YELLOW"
   },
-
   {
     "id": "CASE-033",
     "symptoms": "severe abdominal pain, heavy vaginal bleeding",
     "vitals": {},
     "weeks": 28,
     "expected_risk": "RED",
-    "key_sign": "Placental abruption — dual RED signs combined"
+    "key_sign": "Placental abruption — dual RED signs"
   },
   {
     "id": "CASE-034",
@@ -286,6 +282,128 @@
     "vitals": {"bp_sys": 116, "bp_dia": 74},
     "weeks": 34,
     "expected_risk": "GREEN",
-    "key_sign": "Physiological ankle oedema with normal BP — confuser GREEN"
+    "key_sign": "CONFUSER: Physiological ankle oedema with normal BP"
+  },
+  {
+    "id": "CASE-036",
+    "symptoms": "headache and stomach pain",
+    "vitals": {"bp_sys": 122, "bp_dia": 80},
+    "weeks": 18,
+    "expected_risk": "GREEN",
+    "key_sign": "CONFUSER: Non-severe headache + mild stomach pain with normal BP — sounds alarming but not a danger sign"
+  },
+  {
+    "id": "CASE-037",
+    "symptoms": "baby is not kicking much since yesterday",
+    "vitals": {},
+    "weeks": 36,
+    "expected_risk": "YELLOW",
+    "key_sign": "CONFUSER PARAPHRASE: Reduced foetal movement described colloquially — must map to YELLOW"
+  },
+  {
+    "id": "CASE-038",
+    "symptoms": "no fetal movement",
+    "vitals": {},
+    "weeks": 32,
+    "expected_risk": "RED",
+    "key_sign": "SPELLING VARIANT: American spelling 'fetal' vs WHO 'foetal' — must not be missed"
+  },
+  {
+    "id": "CASE-039",
+    "symptoms": "very bad headache and cannot see properly",
+    "vitals": {"bp_sys": 148, "bp_dia": 98},
+    "weeks": 34,
+    "expected_risk": "RED",
+    "key_sign": "PARAPHRASE: Colloquial description of severe headache + visual disturbance — must detect pre-eclampsia"
+  },
+  {
+    "id": "CASE-040",
+    "symptoms": "patient had a seizure",
+    "vitals": {"bp_sys": 168, "bp_dia": 108},
+    "weeks": 33,
+    "expected_risk": "RED",
+    "key_sign": "SYNONYM: 'seizure' for convulsions — eclampsia must not be missed"
+  },
+  {
+    "id": "CASE-041",
+    "symptoms": "bleeding from vagina, small amount",
+    "vitals": {},
+    "weeks": 12,
+    "expected_risk": "YELLOW",
+    "key_sign": "BORDERLINE: Light bleeding in first trimester — not heavy/severe, refer for evaluation"
+  },
+  {
+    "id": "CASE-042",
+    "symptoms": "extreme tiredness, can barely walk",
+    "vitals": {"hb": 7.2},
+    "weeks": 26,
+    "expected_risk": "YELLOW",
+    "key_sign": "BORDERLINE: Hb just above severe anaemia threshold (7.0) — symptoms suggest clinical significance"
+  },
+  {
+    "id": "CASE-043",
+    "symptoms": "normal pregnancy, routine ANC visit, no complaints",
+    "vitals": {"bp_sys": 110, "bp_dia": 70},
+    "weeks": 24,
+    "expected_risk": "GREEN",
+    "key_sign": "TRUE NEGATIVE: All normal — must not over-alarm"
+  },
+  {
+    "id": "CASE-044",
+    "symptoms": "backache and leg cramps",
+    "vitals": {},
+    "weeks": 32,
+    "expected_risk": "GREEN",
+    "key_sign": "CONFUSER: Common third-trimester discomforts, not danger signs"
+  },
+  {
+    "id": "CASE-045",
+    "symptoms": "no foetal movement (Tamil narrative)",
+    "vitals": {},
+    "weeks": 36,
+    "expected_risk": "RED",
+    "key_sign": "Foetal distress — Tamil narrative input",
+    "voice_input": "36 வார கர்ப்பிணி, குழந்தை இன்று காலை முதல் அசையவே இல்லை. மிகவும் பயமாக இருக்கிறது."
+  },
+  {
+    "id": "CASE-046",
+    "symptoms": "mild swelling, normal checkup (Tamil narrative)",
+    "vitals": {"bp_sys": 118, "bp_dia": 78},
+    "weeks": 28,
+    "expected_risk": "GREEN",
+    "key_sign": "Normal Tamil narrative — must not over-alarm",
+    "voice_input": "28 வார பரிசோதனை. சிறிய கால் வீக்கம் மட்டுமே உள்ளது. BP சரியாக உள்ளது."
+  },
+  {
+    "id": "CASE-047",
+    "symptoms": "vitals only — BP severely elevated, no symptom report",
+    "vitals": {"bp_sys": 162, "bp_dia": 108},
+    "weeks": 35,
+    "expected_risk": "RED",
+    "key_sign": "VITALS-ONLY: BP ≥160/110 alone is a RED sign even without reported symptoms"
+  },
+  {
+    "id": "CASE-048",
+    "symptoms": "vitals only — borderline BP, no symptoms",
+    "vitals": {"bp_sys": 135, "bp_dia": 88},
+    "weeks": 30,
+    "expected_risk": "YELLOW",
+    "key_sign": "VITALS-ONLY: BP 135/88 without symptoms — borderline gestational hypertension, monitor"
+  },
+  {
+    "id": "CASE-049",
+    "symptoms": "patient looks pale, says she feels fine",
+    "vitals": {"hb": 6.8},
+    "weeks": 22,
+    "expected_risk": "YELLOW",
+    "key_sign": "CONFUSER: Patient self-reports fine but vitals show severe anaemia — vitals must override subjective report"
+  },
+  {
+    "id": "CASE-050",
+    "symptoms": "fell down, stomach hit the ground",
+    "vitals": {},
+    "weeks": 30,
+    "expected_risk": "YELLOW",
+    "key_sign": "EDGE CASE: Abdominal trauma in pregnancy — not a named danger sign but clinically requires referral"
   }
 ]

@@ -96,20 +96,71 @@ The offline constraint is not a preference — it is the product. Every technica
 
 ## Evaluation Metrics
 
-Evaluated on **20 held-out maternal health test cases** covering single-symptom, multi-symptom, vitals-bearing, confuser/edge-case, Hindi code-mix, and ASHA diary narrative scenarios.
+Evaluated on **50 held-out maternal health test cases** spanning six difficulty categories:
 
-| Method | RED Recall | Notes |
+| Category | Count | What it tests |
 |---|---|---|
-| Rule-based baseline | **100%** | Deterministic WHO ANC checklist — catches all keyword-matched danger signs |
-| Pure fine-tuned LLM | **85%** | Clinically conservative — biased toward over-referral when uncertain |
-| **LLM + Rule safety-net (production)** | **100% by design** | `merge_risk()` = max(LLM, rule) — RED is structurally guaranteed |
+| Structured single-symptom | 15 | Core danger sign detection |
+| Multi-symptom combinations | 8 | Pre-eclampsia triad, eclampsia, abruption |
+| Vitals-only (no symptom text) | 2 | Classifier must rely on BP/Hb/temp alone |
+| Confuser / borderline | 12 | Mild headache ≠ severe; ankle swelling + normal BP = GREEN |
+| Narrative / colloquial | 8 | ASHA diary-style free text — no structured fields |
+| Hindi / Tamil code-mix | 5 | Indic language inputs — synonym and script mapping |
 
-> Run `python finetune/evaluate_model.py` with the GGUF model in place to reproduce full accuracy and F1 numbers.
+**Class distribution:** 16 RED · 17 YELLOW · 17 GREEN
 
-**Why 100% RED recall is a structural guarantee:**
-`merge_risk()` always returns the higher of the LLM risk and the rule-based risk. The deterministic checker uses the WHO ANC danger signs list — if any RED keyword appears (severe headache + visual disturbance, convulsions, no foetal movement >12 h, heavy bleeding), the output is RED regardless of LLM quality. The fine-tuned LLM contributes: (1) consistent JSON function-call output that enables the safety net to operate, (2) clinical conservatism when uncertain, and (3) natural-language response in the ASHA's language.
+---
 
-**Fine-tuning dataset (1,500 training samples):**
+### How evaluation works
+
+```bash
+python finetune/evaluate_model.py
+```
+
+The script runs three independent predictions on every case and prints a full scikit-learn classification report for each:
+
+```
+Method              Accuracy    F1 (weighted)
+──────────────────────────────────────────────
+Rule-based only        ?%           ?%
+Pure fine-tuned LLM    ?%           ?%
+LLM + Rule (prod)      ?%           ?%
+
+Per-class (LLM + Rule — production path):
+              precision  recall  f1-score  support
+RED               ?        ?        ?       16
+YELLOW            ?        ?        ?       17
+GREEN             ?        ?        ?       17
+```
+
+> Download the GGUF model (`./models/download_model.sh`) and run the script to fill in the actual numbers.
+
+---
+
+### What each method actually measures
+
+**Rule-based only** — no LLM at all. Runs `assess_danger_signs()` + `classify_risk()` against structured WHO keyword lists. Exposes where the rule system fails: colloquial phrasing ("baby not kicking"), spelling variants ("fetal" vs "foetal"), narrative inputs, and Hindi/Tamil text. This is the baseline floor.
+
+**Pure fine-tuned LLM** — Gemma 4 E4B with no rule merge. Exposes what the fine-tuning actually learned: handling paraphrases, Indic language, and narrative cases that the rule system cannot. This is where training quality is honestly measured.
+
+**LLM + Rule (production path)** — `merge_risk(llm_risk, rule_risk)` returns the higher of the two. This is what Saheli ships. The two metrics that matter most here:
+
+- **RED recall** — what fraction of true emergencies were caught. Any missed RED is a patient safety failure.
+- **GREEN precision** — what fraction of GREEN predictions were actually GREEN. Low GREEN precision means over-alarming, which erodes ASHA worker trust and overwhelms referral facilities.
+
+Neither metric alone is sufficient. A system that labels everything RED has 100% RED recall but zero clinical utility.
+
+---
+
+### Why the rule safety net is an architecture choice, not a metric
+
+`merge_risk()` cannot guarantee 100% RED recall across all inputs. The rule classifier operates on keyword matching — it fails on narrative phrasing ("she had a fit"), Tamil input, and colloquial descriptions ("baby stopped moving"). The LLM is required precisely for these cases.
+
+What the safety net *does* guarantee: any case the rule classifier correctly identifies as RED cannot be silently downgraded by the LLM. The two components are complementary, not redundant. The benchmark measures how well they perform together on genuinely hard cases.
+
+---
+
+### Fine-tuning dataset (1,500 training samples)
 
 | Type | Count | Purpose |
 |---|---|---|
@@ -119,7 +170,7 @@ Evaluated on **20 held-out maternal health test cases** covering single-symptom,
 | Hindi code-mix | 150 | Roman transliteration ASHA inputs |
 | Free-form narrative | 100 | ASHA diary-style inputs |
 
-**Fine-tuning config:** Unsloth LoRA · rank=16 · alpha=32 · target: q_proj, v_proj · 3 epochs · batch=1 · grad accumulation=4 · lr=2e-4 · exported to GGUF Q4_K_M for llama.cpp.
+**Config:** Unsloth LoRA · rank=16 · alpha=32 · target: q_proj, v_proj · 3 epochs · batch=1 · grad accumulation=4 · lr=2e-4 · exported to GGUF Q4_K_M for llama.cpp.
 
 ---
 
