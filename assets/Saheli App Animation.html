@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Saheli — App Animation</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ── Easing ──
+function ease(t, type) {
+  switch(type) {
+    case 'out':     return 1 - Math.pow(1 - t, 4);
+    case 'out3':    return 1 - Math.pow(1 - t, 3);
+    case 'in':      return t * t * t;
+    case 'in2':     return t * t;
+    case 'inout':   return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+    case 'inout2':  return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2;
+    case 'spring': {
+      if (t === 0) return 0; if (t === 1) return 1;
+      return Math.pow(2,-10*t)*Math.sin((t*10-0.75)*(2*Math.PI/2.8))+1;
+    }
+    case 'softspring': {
+      if (t === 0) return 0; if (t === 1) return 1;
+      return Math.pow(2,-8*t)*Math.sin((t*8-0.9)*(2*Math.PI/3.2))+1;
+    }
+    case 'outback': {
+      const c1=1.70158, c3=c1+1;
+      return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2);
+    }
+    default: return t;
+  }
+}
+function lerp(a,b,t){ return a+(b-a)*t; }
+
+// ── Phone Frame ──
+function PhoneFrame({ children }) {
+  const W = 390, H = 844;
+  return (
+    <div style={{
+      width: W, height: H,
+      borderRadius: 50,
+      background: '#FDFAF8',
+      position: 'relative',
+      overflow: 'hidden',
+      boxShadow: '0 0 0 1.5px #2a2a2a, 0 0 0 3px #444, 0 48px 96px rgba(0,0,0,0.6)',
+      flexShrink: 0,
+    }}>
+      {/* Side buttons */}
+      <div style={{ position:'absolute', left:-3, top:130, width:3, height:36, background:'#333', borderRadius:'3px 0 0 3px' }}/>
+      <div style={{ position:'absolute', left:-3, top:180, width:3, height:64, background:'#333', borderRadius:'3px 0 0 3px' }}/>
+      <div style={{ position:'absolute', left:-3, top:258, width:3, height:64, background:'#333', borderRadius:'3px 0 0 3px' }}/>
+      <div style={{ position:'absolute', right:-3, top:170, width:3, height:80, background:'#333', borderRadius:'0 3px 3px 0' }}/>
+      {/* Dynamic island */}
+      <div style={{
+        position:'absolute', top:12, left:'50%',
+        transform:'translateX(-50%)',
+        width:120, height:34, borderRadius:20,
+        background:'#000', zIndex:50,
+      }}/>
+      {/* Status bar */}
+      <div style={{
+        position:'absolute', top:0, left:0, right:0, height:54,
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+        padding:'0 28px', zIndex:40,
+      }}>
+        <span style={{ fontFamily:'-apple-system,system-ui', fontSize:17, fontWeight:600, color:'#1A1A1A', paddingTop:4 }}>9:41</span>
+        <div style={{ display:'flex', gap:6, alignItems:'center', paddingTop:4 }}>
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="none">
+            <rect x="0" y="7" width="3" height="5" rx="0.5" fill="#1A1A1A"/>
+            <rect x="4.5" y="4.5" width="3" height="7.5" rx="0.5" fill="#1A1A1A"/>
+            <rect x="9" y="2" width="3" height="10" rx="0.5" fill="#1A1A1A"/>
+            <rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="#1A1A1A"/>
+          </svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+            <path d="M8 2C10.5 2 12.7 3.1 14.2 4.8L15.5 3.3C13.6 1.3 11 0 8 0C5 0 2.4 1.3 0.5 3.3L1.8 4.8C3.3 3.1 5.5 2 8 2Z" fill="#1A1A1A"/>
+            <path d="M8 5C9.8 5 11.4 5.8 12.5 7L13.8 5.5C12.3 4 10.3 3 8 3C5.7 3 3.7 4 2.2 5.5L3.5 7C4.6 5.8 6.2 5 8 5Z" fill="#1A1A1A"/>
+            <circle cx="8" cy="10" r="2" fill="#1A1A1A"/>
+          </svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none">
+            <rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#1A1A1A" strokeOpacity="0.35"/>
+            <rect x="2" y="2" width="17" height="8" rx="2" fill="#1A1A1A"/>
+            <path d="M23 4v4a2 2 0 000-4z" fill="#1A1A1A" fillOpacity="0.4"/>
+          </svg>
+        </div>
+      </div>
+      {/* Content */}
+      <div style={{ position:'absolute', inset:0 }}>{children}</div>
+      {/* Home indicator */}
+      <div style={{
+        position:'absolute', bottom:8, left:'50%',
+        transform:'translateX(-50%)',
+        width:134, height:5, borderRadius:3,
+        background:'rgba(0,0,0,0.2)', zIndex:50,
+      }}/>
+    </div>
+  );
+}
+
+// ── Splash Animation ──
+function Splash({ onReplay }) {
+  const rafRef  = useRef(null);
+  const t0Ref   = useRef(null);
+  const tmRef   = useRef(null);
+  const [v, setV] = useState({
+    wrapOp:0, wrapSc:0.92,
+    headDash:114, neckDash:14, shouldersDash:90, bellyDash:110,
+    bindiSc:0, bindiOp:0,
+    heartSc:0, heartOp:0,
+    divH:0, divOp:0,
+    wordOp:0, wordY:16,
+    ruleW:0, ruleOp:0,
+    tagOp:0, tagY:6,
+    shimX:-100,
+  });
+  const [done, setDone] = useState(false);
+  const [heartbeat, setHeartbeat] = useState(false);
+  const [ripple, setRipple] = useState(false);
+  const hbRef = useRef(null);
+
+  const IN = [
+    [0,   500,  'inout2', 'wrapOp',        0,   1],
+    [0,   600,  'out',    'wrapSc',      0.92,  1],
+    [100, 900,  'inout',  'headDash',    114,   0],
+    [600, 900,  'softspring','bindiSc',    0,   1],
+    [600, 900,  'inout2', 'bindiOp',       0,   1],
+    [780,1060,  'inout',  'neckDash',     14,   0],
+    [880,1380,  'inout',  'shouldersDash',90,   0],
+    [1100,1700, 'inout',  'bellyDash',   110,   0],
+    [1580,1980, 'softspring','heartSc',    0,   1],
+    [1580,1980, 'inout2', 'heartOp',       0, 0.85],
+    [1300,1800, 'inout2', 'divH',          0,  88],
+    [1300,1700, 'inout2', 'divOp',         0,   1],
+    [1700,2200, 'out',    'wordOp',         0,   1],
+    [1700,2200, 'out',    'wordY',         16,   0],
+    [1950,2350, 'inout2', 'ruleW',          0, 100],
+    [1950,2350, 'out',    'ruleOp',         0,   1],
+    [2150,2600, 'out',    'tagOp',          0,   1],
+    [2150,2600, 'out',    'tagY',           6,   0],
+    [2400,3100, 'inout',  'shimX',       -100, 220],
+  ];
+
+  const OUT = [
+    [0,   350,  'inout2', 'tagOp',         1,   0],
+    [0,   350,  'inout2', 'tagY',          0,   6],
+    [100, 480,  'inout2', 'ruleW',       100,   0],
+    [100, 480,  'inout2', 'ruleOp',        1,   0],
+    [280, 750,  'inout2', 'wordOp',        1,   0],
+    [280, 750,  'inout2', 'wordY',         0,  16],
+    [420, 860,  'inout2', 'divH',         88,   0],
+    [420, 860,  'inout2', 'divOp',         1,   0],
+    [200, 700,  'inout2', 'heartSc',       1,   0],
+    [200, 700,  'inout2', 'heartOp',    0.85,   0],
+    [380, 950,  'inout2', 'bellyDash',     0, 110],
+    [580,1080,  'inout2', 'shouldersDash', 0,  90],
+    [780,1080,  'inout2', 'neckDash',      0,  14],
+    [780,1060,  'inout2', 'bindiSc',       1,   0],
+    [780,1060,  'inout2', 'bindiOp',       1,   0],
+    [860,1380,  'inout2', 'headDash',      0, 114],
+    [1100,1550, 'inout2', 'wrapOp',        1,   0],
+    [1100,1550, 'inout2', 'wrapSc',        1, 0.92],
+  ];
+
+  function runTL(tl, cb) {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    t0Ref.current = null;
+    const maxT = Math.max(...tl.map(e => e[1]));
+    function tick(now) {
+      if (!t0Ref.current) t0Ref.current = now;
+      const t = now - t0Ref.current;
+      const upd = {};
+      for (const [s, e, et, k, fr, to] of tl) {
+        const dur = e - s;
+        const loc = Math.max(0, Math.min(dur, t - s));
+        const p = dur > 0 ? ease(loc/dur, et) : (t >= s ? 1 : 0);
+        upd[k] = lerp(fr, to, p);
+      }
+      setV(prev => ({ ...prev, ...upd }));
+      if (t < maxT) rafRef.current = requestAnimationFrame(tick);
+      else { rafRef.current = null; cb && cb(); }
+    }
+    rafRef.current = requestAnimationFrame(tick);
+  }
+
+  function start() {
+    setDone(false);
+    setHeartbeat(false);
+    setRipple(false);
+    runTL(IN, () => {
+      // trigger ripple + heartbeat on hold
+      setRipple(true);
+      setTimeout(() => setHeartbeat(true), 200);
+      tmRef.current = setTimeout(() => {
+        setHeartbeat(false);
+        setRipple(false);
+        runTL(OUT, () => {
+          tmRef.current = setTimeout(() => setDone(true), 400);
+        });
+      }, 2200);
+    });
+  }
+
+  function replay() {
+    clearTimeout(tmRef.current);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    setDone(false);
+    setV({
+      wrapOp:0, wrapSc:0.92,
+      headDash:114, neckDash:14, shouldersDash:90, bellyDash:110,
+      bindiSc:0, bindiOp:0, heartSc:0, heartOp:0,
+      divH:0, divOp:0, wordOp:0, wordY:16,
+      ruleW:0, ruleOp:0, tagOp:0, tagY:6, shimX:-100,
+    });
+    setTimeout(start, 60);
+  }
+
+  useEffect(() => {
+    const tid = setTimeout(start, 500);
+    return () => { clearTimeout(tid); clearTimeout(tmRef.current); if(rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, []);
+
+  return (
+    <div style={{
+      width:'100%', height:'100%',
+      background:'#FDFAF8',
+      display:'flex', flexDirection:'column',
+      alignItems:'center', justifyContent:'center',
+      position:'relative', overflow:'hidden',
+    }}>
+      {/* warm glow bloom */}
+      <div style={{
+        position:'absolute', width:320, height:320, borderRadius:'50%',
+        background:'radial-gradient(circle, rgba(193,57,14,0.09) 0%, rgba(224,98,42,0.04) 40%, transparent 70%)',
+        opacity: v.wrapOp,
+        transform:`scale(${v.wrapSc})`,
+        transition:'opacity 0.3s',
+        pointerEvents:'none',
+      }}/>
+
+      {/* ripple rings from heart */}
+      {ripple && (<>
+        <div key="r1" style={{
+          position:'absolute',
+          width:24, height:24, borderRadius:'50%',
+          border:'1.5px solid rgba(193,57,14,0.35)',
+          animation:'ripple 1.4s ease-out 0s infinite',
+          pointerEvents:'none',
+        }}/>
+        <div key="r2" style={{
+          position:'absolute',
+          width:24, height:24, borderRadius:'50%',
+          border:'1.5px solid rgba(193,57,14,0.22)',
+          animation:'ripple 1.4s ease-out 0.48s infinite',
+          pointerEvents:'none',
+        }}/>
+        <div key="r3" style={{
+          position:'absolute',
+          width:24, height:24, borderRadius:'50%',
+          border:'1px solid rgba(193,57,14,0.12)',
+          animation:'ripple 1.4s ease-out 0.96s infinite',
+          pointerEvents:'none',
+        }}/>
+      </>)}
+
+      {/* LOGO ROW */}
+      <div style={{ display:'flex', alignItems:'center', gap:20, opacity: v.wrapOp, transform:`scale(${v.wrapSc})` }}>
+
+        {/* Icon SVG */}
+        <svg width="68" height="90" viewBox="0 0 90 120" fill="none" style={{overflow:'visible'}}>
+          <defs>
+            <linearGradient id="lg1" x1="0" y1="0" x2="90" y2="120" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#B5330A"/>
+              <stop offset="100%" stopColor="#E0622A"/>
+            </linearGradient>
+          </defs>
+          {/* Head */}
+          <circle cx="45" cy="22" r="18"
+            stroke="url(#lg1)" strokeWidth="5" fill="none"
+            strokeLinecap="round"
+            strokeDasharray="114"
+            strokeDashoffset={v.headDash}
+          />
+          {/* Bindi */}
+          <circle cx="45" cy="13" r="4.5" fill="#C1390E"
+            style={{ transformOrigin:'45px 13px', transform:`scale(${v.bindiSc})`, opacity:v.bindiOp }}
+          />
+          {/* Neck */}
+          <line x1="45" y1="40" x2="45" y2="52"
+            stroke="url(#lg1)" strokeWidth="5" strokeLinecap="round"
+            strokeDasharray="14" strokeDashoffset={v.neckDash}
+          />
+          {/* Shoulders */}
+          <path d="M 12 72 Q 12 52 45 52 Q 78 52 78 72"
+            stroke="url(#lg1)" strokeWidth="5" fill="none" strokeLinecap="round"
+            strokeDasharray="90" strokeDashoffset={v.shouldersDash}
+          />
+          {/* Belly */}
+          <path d="M 20 72 Q 14 100 45 108 Q 76 100 70 72"
+            stroke="url(#lg1)" strokeWidth="5" fill="none" strokeLinecap="round"
+            strokeDasharray="110" strokeDashoffset={v.bellyDash}
+          />
+          {/* Heart */}
+          <path d="M45 97 C45 97 35 90 35 84 C35 80 38.5 78 41.5 80 C43 81 44 83 45 84.5 C46 83 47 81 48.5 80 C51.5 78 55 80 55 84 C55 90 45 97 45 97Z"
+            fill="#C1390E"
+            style={{
+              transformOrigin:'45px 88px',
+              transform:`scale(${v.heartSc})`,
+              opacity:v.heartOp,
+              animation: heartbeat ? 'hb 1s ease-in-out infinite' : 'none',
+            }}
+          />
+        </svg>
+
+        {/* Divider */}
+        <div style={{
+          width:1.5, height:v.divH,
+          background:'linear-gradient(to bottom, transparent, #C1390E55, transparent)',
+          opacity:v.divOp,
+        }}/>
+
+        {/* Text */}
+        <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+          {/* Wordmark with shimmer */}
+          <div style={{
+            fontFamily:"Georgia,'Palatino Linotype',serif",
+            fontSize:40, fontWeight:700, letterSpacing:8,
+            color:'#1A1A1A', lineHeight:1,
+            opacity:v.wordOp,
+            transform:`translateY(${v.wordY}px)`,
+            position:'relative', overflow:'hidden',
+          }}>
+            SAHELI
+            <div style={{
+              position:'absolute', inset:0,
+              background:`linear-gradient(105deg, transparent ${v.shimX-18}%, rgba(255,255,255,0.6) ${v.shimX}%, transparent ${v.shimX+18}%)`,
+              pointerEvents:'none',
+            }}/>
+          </div>
+          {/* Rule */}
+          <div style={{
+            height:2, width:`${v.ruleW}%`,
+            background:'linear-gradient(to right, #C1390E, #E0622A, transparent)',
+            borderRadius:2, opacity:v.ruleOp,
+          }}/>
+          {/* Tagline */}
+          <div style={{
+            fontFamily:"'Trebuchet MS','Gill Sans',sans-serif",
+            fontSize:8.5, letterSpacing:3, color:'#BBB', fontWeight:400,
+            opacity:v.tagOp, transform:`translateY(${v.tagY}px)`,
+            whiteSpace:'nowrap',
+          }}>
+            MATERNAL HEALTH · EVERY VILLAGE
+          </div>
+        </div>
+      </div>
+
+      {/* Replay pill */}
+      {done && (
+        <button onClick={onReplay} style={{
+          position:'absolute', bottom:52,
+          background:'none',
+          border:'1px solid rgba(193,57,14,0.3)',
+          color:'#C1390E',
+          fontFamily:"'Trebuchet MS',sans-serif",
+          fontSize:9, letterSpacing:3,
+          padding:'9px 24px', borderRadius:40,
+          cursor:'pointer',
+          animation:'fdin 0.5s ease forwards',
+        }}>
+          ↺ &nbsp; REPLAY
+        </button>
+      )}
+
+      <style>{`
+        @keyframes fdin { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes hb {
+          0%   { transform: scale(1); }
+          14%  { transform: scale(1.18); }
+          28%  { transform: scale(1); }
+          42%  { transform: scale(1.1); }
+          56%  { transform: scale(1); }
+          100% { transform: scale(1); }
+        }
+        @keyframes ripple {
+          0%   { transform: scale(1);   opacity: 1; }
+          100% { transform: scale(9);   opacity: 0; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ── App ──
+function App() {
+  const [key, setKey] = React.useState(0);
+  return (
+    <div style={{
+      display:'flex', alignItems:'center', justifyContent:'center',
+      minHeight:'100vh', background:'#111',
+    }}>
+      <PhoneFrame>
+        <Splash key={key} onReplay={() => setKey(k => k + 1)}/>
+      </PhoneFrame>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

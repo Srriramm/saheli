@@ -1,0 +1,291 @@
+[
+  {
+    "id": "CASE-001",
+    "symptoms": "severe headache, blurred vision",
+    "vitals": {"bp_sys": 150, "bp_dia": 100},
+    "weeks": 32,
+    "expected_risk": "RED",
+    "key_sign": "Pre-eclampsia"
+  },
+  {
+    "id": "CASE-002",
+    "symptoms": "no foetal movement for 14 hours",
+    "vitals": {},
+    "weeks": 28,
+    "expected_risk": "RED",
+    "key_sign": "Foetal distress"
+  },
+  {
+    "id": "CASE-003",
+    "symptoms": "heavy vaginal bleeding",
+    "vitals": {},
+    "weeks": 20,
+    "expected_risk": "RED",
+    "key_sign": "Placenta praevia risk"
+  },
+  {
+    "id": "CASE-004",
+    "symptoms": "mild ankle swelling",
+    "vitals": {"bp_sys": 130, "bp_dia": 85},
+    "weeks": 36,
+    "expected_risk": "YELLOW",
+    "key_sign": "Mild hypertension"
+  },
+  {
+    "id": "CASE-005",
+    "symptoms": "feeling very weak",
+    "vitals": {"hb": 6.5},
+    "weeks": 24,
+    "expected_risk": "YELLOW",
+    "key_sign": "Severe anaemia"
+  },
+  {
+    "id": "CASE-006",
+    "symptoms": "mild nausea",
+    "vitals": {},
+    "weeks": 16,
+    "expected_risk": "GREEN",
+    "key_sign": "Normal early pregnancy"
+  },
+  {
+    "id": "CASE-007",
+    "symptoms": "fever, chills",
+    "vitals": {"temp_c": 39.2},
+    "weeks": 38,
+    "expected_risk": "YELLOW",
+    "key_sign": "Possible infection"
+  },
+  {
+    "id": "CASE-008",
+    "symptoms": "sudden severe abdominal pain",
+    "vitals": {},
+    "weeks": 30,
+    "expected_risk": "RED",
+    "key_sign": "Placental abruption risk"
+  },
+  {
+    "id": "CASE-009",
+    "symptoms": "convulsions, loss of consciousness",
+    "vitals": {"bp_sys": 170, "bp_dia": 115},
+    "weeks": 35,
+    "expected_risk": "RED",
+    "key_sign": "Eclampsia"
+  },
+  {
+    "id": "CASE-010",
+    "symptoms": "severe bleeding after delivery",
+    "vitals": {},
+    "weeks": 40,
+    "expected_risk": "RED",
+    "key_sign": "Postpartum haemorrhage"
+  },
+  {
+    "id": "CASE-011",
+    "symptoms": "reduced foetal movement",
+    "vitals": {},
+    "weeks": 34,
+    "expected_risk": "YELLOW",
+    "key_sign": "Reduced foetal movement"
+  },
+  {
+    "id": "CASE-012",
+    "symptoms": "swollen face and hands",
+    "vitals": {"bp_sys": 142, "bp_dia": 92},
+    "weeks": 33,
+    "expected_risk": "YELLOW",
+    "key_sign": "Oedema above ankles with hypertension"
+  },
+  {
+    "id": "CASE-013",
+    "symptoms": "fatigue, mild backache",
+    "vitals": {},
+    "weeks": 22,
+    "expected_risk": "GREEN",
+    "key_sign": "Normal second trimester fatigue"
+  },
+  {
+    "id": "CASE-014",
+    "symptoms": "morning sickness, mild nausea",
+    "vitals": {},
+    "weeks": 10,
+    "expected_risk": "GREEN",
+    "key_sign": "Normal first trimester nausea"
+  },
+  {
+    "id": "CASE-015",
+    "symptoms": "visual disturbance, seeing spots",
+    "vitals": {"bp_sys": 160, "bp_dia": 110},
+    "weeks": 37,
+    "expected_risk": "RED",
+    "key_sign": "Severe pre-eclampsia / imminent eclampsia"
+  },
+  {
+    "id": "CASE-016",
+    "symptoms": "high fever, yellowing of eyes",
+    "vitals": {"hb": 8.5},
+    "weeks": 26,
+    "expected_risk": "YELLOW",
+    "key_sign": "Jaundice in pregnancy"
+  },
+  {
+    "id": "CASE-017",
+    "symptoms": "mild ankle swelling",
+    "vitals": {},
+    "weeks": 30,
+    "expected_risk": "GREEN",
+    "key_sign": "Physiological oedema"
+  },
+  {
+    "id": "CASE-018",
+    "symptoms": "haemoglobin 6.0, pale eyes, extreme weakness",
+    "vitals": {"hb": 6.0},
+    "weeks": 28,
+    "expected_risk": "YELLOW",
+    "key_sign": "Severe anaemia requiring transfusion evaluation"
+  },
+  {
+    "id": "CASE-019",
+    "symptoms": "no foetal movement",
+    "vitals": {},
+    "weeks": 38,
+    "expected_risk": "RED",
+    "key_sign": "Possible intrauterine foetal demise"
+  },
+  {
+    "id": "CASE-020",
+    "symptoms": "mild breast tenderness, fatigue",
+    "vitals": {},
+    "weeks": 8,
+    "expected_risk": "GREEN",
+    "key_sign": "Normal early pregnancy symptoms"
+  },
+  {
+    "id": "CASE-021",
+    "symptoms": "severe headache, blurred vision, seeing spots",
+    "vitals": {"bp_sys": 165, "bp_dia": 112},
+    "weeks": 37,
+    "expected_risk": "RED",
+    "key_sign": "Severe pre-eclampsia — multi-symptom triad"
+  },
+  {
+    "id": "CASE-022",
+    "symptoms": "swollen face and hands, persistent headache",
+    "vitals": {"bp_sys": 143, "bp_dia": 91},
+    "weeks": 33,
+    "expected_risk": "YELLOW",
+    "key_sign": "Early pre-eclampsia warning — oedema + headache + mild hypertension"
+  },
+  {
+    "id": "CASE-023",
+    "symptoms": "mild headache, normal BP",
+    "vitals": {"bp_sys": 118, "bp_dia": 76},
+    "weeks": 20,
+    "expected_risk": "GREEN",
+    "key_sign": "Mild headache confuser — not a danger sign without severity or hypertension"
+  },
+  {
+    "id": "CASE-024",
+    "symptoms": "convulsions, fitting episode",
+    "vitals": {"bp_sys": 172, "bp_dia": 114},
+    "weeks": 35,
+    "expected_risk": "RED",
+    "key_sign": "Eclampsia — convulsions with severe hypertension"
+  },
+  {
+    "id": "CASE-025",
+    "symptoms": "fever, chills, reduced foetal movement",
+    "vitals": {"temp_c": 39.1},
+    "weeks": 32,
+    "expected_risk": "YELLOW",
+    "key_sign": "Fever with reduced foetal activity — dual YELLOW signs"
+  },
+
+  {
+    "id": "CASE-026",
+    "symptoms": "severe headache, blurred vision (Hindi input)",
+    "vitals": {"bp_sys": 158, "bp_dia": 106},
+    "weeks": 32,
+    "expected_risk": "RED",
+    "key_sign": "Pre-eclampsia — Hindi code-mix input",
+    "voice_input": "32 hafte ki patient ko bahut tez sar dard hai aur aankhein dhundhli ho gayi hain. BP 158/106."
+  },
+  {
+    "id": "CASE-027",
+    "symptoms": "severe anaemia (Hindi input)",
+    "vitals": {"hb": 6.5},
+    "weeks": 24,
+    "expected_risk": "YELLOW",
+    "key_sign": "Severe anaemia — Hindi code-mix input",
+    "voice_input": "24 hafte ki aurat bahut kamzor hai. Blood test mein haemoglobin sirf 6.5 aaya."
+  },
+  {
+    "id": "CASE-028",
+    "symptoms": "mild nausea, morning sickness (Hindi input)",
+    "vitals": {},
+    "weeks": 16,
+    "expected_risk": "GREEN",
+    "key_sign": "Normal early pregnancy — Hindi code-mix input",
+    "voice_input": "16 hafte pregnant, sirf subah ki ulti aur halka ji ghabrana. Koi aur takleef nahi."
+  },
+
+  {
+    "id": "CASE-029",
+    "symptoms": "convulsions, loss of consciousness (narrative)",
+    "vitals": {"bp_sys": 170, "bp_dia": 115},
+    "weeks": 35,
+    "expected_risk": "RED",
+    "key_sign": "Eclampsia — ASHA diary narrative input",
+    "voice_input": "I visited Meena, 35 weeks pregnant. Her husband said she had a fit last night — shook all over and went unconscious for a few minutes. When I measured BP it was 170/115. She is very scared."
+  },
+  {
+    "id": "CASE-030",
+    "symptoms": "oedema above ankles, persistent headache (narrative)",
+    "vitals": {"bp_sys": 142, "bp_dia": 92},
+    "weeks": 30,
+    "expected_risk": "YELLOW",
+    "key_sign": "Early pre-eclampsia warning — ASHA diary narrative input",
+    "voice_input": "Visited patient today — 30 weeks pregnant. She has had a headache for two days. I noticed her face looked puffy and hands were swollen. BP measured 142/92. Not sure how serious this is."
+  },
+
+  {
+    "id": "CASE-031",
+    "symptoms": "mild heartburn, frequent urination",
+    "vitals": {},
+    "weeks": 14,
+    "expected_risk": "GREEN",
+    "key_sign": "Normal first trimester symptoms — confuser GREEN"
+  },
+  {
+    "id": "CASE-032",
+    "symptoms": "fever 38.3C, no other complaints",
+    "vitals": {"temp_c": 38.3},
+    "weeks": 26,
+    "expected_risk": "YELLOW",
+    "key_sign": "Fever just above 38C threshold — borderline YELLOW"
+  },
+
+  {
+    "id": "CASE-033",
+    "symptoms": "severe abdominal pain, heavy vaginal bleeding",
+    "vitals": {},
+    "weeks": 28,
+    "expected_risk": "RED",
+    "key_sign": "Placental abruption — dual RED signs combined"
+  },
+  {
+    "id": "CASE-034",
+    "symptoms": "jaundice, high fever",
+    "vitals": {"temp_c": 39.2},
+    "weeks": 26,
+    "expected_risk": "YELLOW",
+    "key_sign": "Jaundice with fever — possible malaria or hepatitis"
+  },
+  {
+    "id": "CASE-035",
+    "symptoms": "mild ankle swelling, BP normal",
+    "vitals": {"bp_sys": 116, "bp_dia": 74},
+    "weeks": 34,
+    "expected_risk": "GREEN",
+    "key_sign": "Physiological ankle oedema with normal BP — confuser GREEN"
+  }
+]

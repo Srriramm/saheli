@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Saheli",
+    "slug": "saheli",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FDF0EB"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.saheli.asha",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Saheli needs microphone access to record patient symptoms for AI triage.",
+        "NSCameraUsageDescription": "Saheli needs camera access to photograph patient symptoms.",
+        "NSPhotoLibraryUsageDescription": "Saheli needs photo library access to upload patient symptom photos.",
+        "NSLocationWhenInUseUsageDescription": "Saheli uses your location to find the nearest referral facility."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FDF0EB"
+      },
+      "package": "com.saheli.asha",
+      "permissions": [
+        "RECORD_AUDIO",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      ["expo-av", { "microphonePermission": "Allow Saheli to record patient voice for triage." }],
+      ["expo-image-picker", { "photosPermission": "Allow Saheli to access photos for symptom analysis." }],
+      "expo-location"
+    ]
+  }
+}

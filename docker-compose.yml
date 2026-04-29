@@ -1,0 +1,29 @@
+services:
+  saheli-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: saheli-backend
+    ports:
+      - "5000:5000"
+    volumes:
+      # Model weights: place gemma-4-E4B-IT-Q4_K_M.gguf and mmproj here
+      # Run ./models/download_model.sh on the host first, then start the container
+      - ./models:/app/models:ro
+      # Persistent SQLite patient database
+      - saheli-data:/app/data/saheli.db
+      # Uploaded photos (ephemeral — remove this volume for stateless deployments)
+      - saheli-uploads:/app/data/uploads
+    environment:
+      - DEFAULT_LANGUAGE=ta
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+volumes:
+  saheli-data:
+  saheli-uploads:

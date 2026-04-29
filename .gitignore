@@ -1,0 +1,58 @@
+# Python
+venv/
+**/__pycache__/
+**/*.pyc
+*.egg-info/
+.eggs/
+
+# Model weights — large binary files, download via models/download_model.sh
+models/*.gguf
+models/*.bin
+
+# Runtime-generated
+logs/
+*.db
+data/uploads/
+assets/uploads/
+
+# Secrets
+.env
+
+# Training artifacts — regenerate with finetune/prepare_dataset.py
+finetune/datasets/
+
+# Archives
+*.zip
+
+# Mobile app — React Native
+app/node_modules/
+app/.expo/
+app/dist/
+app/.env
+
+# Mobile app — Flutter build outputs
+app_flutter/build/
+app_flutter/.dart_tool/
+app_flutter/.flutter-plugins
+app_flutter/.flutter-plugins-dependencies
+
+# JVM crash logs (from Flutter/Android builds)
+hs_err_pid*.log
+replay_pid*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code project settings (local only)
+.claude/
+
+# Docker
+.dockerignore
+
+# Test cache
+.pytest_cache/

@@ -1,0 +1,45 @@
+{
+  "RED": [
+    "severe headache",
+    "visual disturbance",
+    "blurred vision",
+    "seeing spots",
+    "severe bleeding",
+    "heavy vaginal bleeding",
+    "convulsions",
+    "fits",
+    "loss of consciousness",
+    "no foetal movement",
+    "severe abdominal pain",
+    "sudden abdominal pain"
+  ],
+  "YELLOW": [
+    "BP >140/90",
+    "high blood pressure",
+    "haemoglobin <7g/dL",
+    "severe anaemia",
+    "fever >38C",
+    "high fever",
+    "chills",
+    "reduced foetal movement",
+    "oedema above ankles",
+    "swelling above ankles",
+    "swollen face",
+    "swollen hands",
+    "jaundice",
+    "yellowing of eyes",
+    "persistent headache",
+    "headache for",
+    "headache since"
+  ],
+  "GREEN": [
+    "mild nausea",
+    "mild ankle swelling",
+    "fatigue",
+    "morning sickness",
+    "mild backache",
+    "breast tenderness",
+    "frequent urination",
+    "mild heartburn"
+  ]
+}
