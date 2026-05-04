@@ -27,7 +27,8 @@ SYSTEM_PROMPT_EVAL = (
 
 
 def load_test_cases():
-    with open("./tests/sample_cases.json", "r") as f:
+    path = _os.path.join(_project_root, "tests", "sample_cases.json")
+    with open(path, "r") as f:
         return json.load(f)
 
 
@@ -51,12 +52,16 @@ def _build_voice_sim(case: dict) -> str:
 
 def _rule_based_predict(case: dict) -> str:
     """Deterministic prediction using only the rule-based pipeline (no LLM)."""
-    symptoms_text = case["symptoms"]
-    vitals = case.get("vitals", {})
-    symptoms_list = [s.strip() for s in symptoms_text.replace(",", ";").split(";")]
-    assessment = assess_danger_signs(symptoms_list, vitals)
-    rule_risk = classify_risk(assessment["danger_signs"], vitals)
-    return merge_risk(assessment["risk_level"], rule_risk)
+    try:
+        symptoms_text = case["symptoms"]
+        vitals = case.get("vitals", {})
+        symptoms_list = [s.strip() for s in symptoms_text.replace(",", ";").split(";")]
+        assessment = assess_danger_signs(symptoms_list, vitals)
+        rule_risk = classify_risk(assessment["danger_signs"], vitals)
+        return merge_risk(assessment["risk_level"], rule_risk)
+    except Exception as e:
+        logging.error(f"Rule-based prediction failed for {case.get('id', '?')}: {e}")
+        return "ERROR"
 
 
 _RED_SIGNALS = [
@@ -126,7 +131,7 @@ def _pure_llm_predict(runner: GemmaRunner, case: dict) -> str:
         output = runner.call_raw(
             system_prompt=SYSTEM_PROMPT_EVAL,
             user_prompt=_build_voice_sim(case),
-            max_tokens=2048,
+            max_tokens=512,
         )
         return _extract_risk(output, debug_id=case.get("id", ""))
     except Exception as e:

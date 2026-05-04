@@ -1,19 +1,20 @@
 import json
-import logging
+import os
 from datetime import datetime
 from geopy.distance import geodesic
 from typing import Dict, List
-from config.settings import REFERRAL_DATA_PATH
 from data.database import log_patient_record, get_patient_history
 
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_WHO_PATH      = os.path.join(_ROOT, "data", "who_anc_checklist.json")
+_REFERRAL_PATH = os.path.join(_ROOT, "data", "referral_data.json")
+
 def load_who_guidelines() -> Dict:
-    """Loads static WHO guidelines."""
-    with open("./data/who_anc_checklist.json", "r") as f:
+    with open(_WHO_PATH, "r") as f:
         return json.load(f)
 
 def load_referrals() -> List[Dict]:
-    """Loads offline referral centers."""
-    with open(REFERRAL_DATA_PATH, "r") as f:
+    with open(_REFERRAL_PATH, "r") as f:
         return json.load(f)
 
 # === Gemma 4 Function Implementations ===
