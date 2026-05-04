@@ -139,12 +139,15 @@ def _pure_llm_predict(runner: GemmaRunner, case: dict) -> str:
         return "ERROR"
 
 
-def run_evaluation(model_path: str):
+def run_evaluation(model_path: str, base_model_path: str = None):
     """
-    Compute accuracy + F1 on 20 test cases. Prints three rows:
+    Compute accuracy + F1 on test cases. Prints up to four rows:
+      0. Base Gemma 4 E4B (no fine-tuning) — only if base_model_path is given
       1. Rule-based baseline    — no LLM at all
-      2. Pure LLM               — model output only, no rule merge
-      3. LLM + Rule safety-net  — production path (TriageEngine.run_triage)
+      2. Fine-tuned LLM         — model output only, no rule merge
+      3. Fine-tuned LLM + Rule  — production path (TriageEngine.run_triage)
+
+    Row 0 vs Row 2 is the delta that proves fine-tuning worked.
     """
     cases = load_test_cases()
     print(f"\nEvaluating Saheli on {len(cases)} maternal health test cases...")
@@ -155,17 +158,17 @@ def run_evaluation(model_path: str):
     rule_acc = accuracy_score(y_true, y_rule)
     rule_f1  = f1_score(y_true, y_rule, average="weighted", zero_division=0)
 
-    print("\n" + "=" * 64)
+    print("\n" + "=" * 76)
     print("  SAHELI EVALUATION BENCHMARKS")
-    print("=" * 64)
+    print("=" * 76)
 
     llm_available = os.path.exists(model_path)
     if not llm_available:
         print(f"{'Metric':<25} {'Rule-only':>15}")
-        print("-" * 64)
+        print("-" * 76)
         print(f"{'Accuracy':<25} {rule_acc*100:>14.1f}%")
         print(f"{'F1 (weighted)':<25} {rule_f1*100:>14.1f}%")
-        print("=" * 64)
+        print("=" * 76)
         print(f"\nNOTE: LLM rows skipped — model not found at:\n  {model_path}")
         print("Run './models/download_model.sh' then re-run evaluation.\n")
         print("Detailed report — Rule-based baseline:")
@@ -173,14 +176,30 @@ def run_evaluation(model_path: str):
                                     zero_division=0))
         return {"rule_accuracy": rule_acc, "rule_f1": rule_f1}
 
-    # ── Load LLM once and share across both paths ─────────────────────────
-    print("Loading GGUF model (this takes ~30 s on GPU)...", flush=True)
+    # ── Row 0: Base model (no fine-tuning) — optional ─────────────────────
+    y_base = None
+    base_acc = base_f1 = None
+    if base_model_path and os.path.exists(base_model_path):
+        print(f"Loading BASE model (no fine-tuning) from:\n  {base_model_path}", flush=True)
+        base_runner = GemmaRunner(model_path=base_model_path)
+        print(f"Running Base-LLM predictions (0/{len(cases)})...", flush=True)
+        y_base = []
+        for i, c in enumerate(cases):
+            y_base.append(_pure_llm_predict(base_runner, c))
+            print(f"  [{i+1:02d}/{len(cases)}] {c['id']} → {y_base[-1]}", flush=True)
+        base_acc = accuracy_score(y_true, y_base)
+        base_f1  = f1_score(y_true, y_base, average="weighted", zero_division=0)
+    elif base_model_path:
+        print(f"NOTE: Base model not found at {base_model_path} — Row 0 skipped.")
+
+    # ── Load fine-tuned model once, share across Rows 2 and 3 ────────────
+    print(f"\nLoading fine-tuned model from:\n  {model_path}", flush=True)
     runner = GemmaRunner(model_path=model_path)
     engine = TriageEngine.__new__(TriageEngine)
     engine.runner = runner
 
-    # Row 2: Pure LLM
-    print(f"\nRunning Pure-LLM predictions (0/{len(cases)})...", flush=True)
+    # Row 2: Fine-tuned pure LLM
+    print(f"\nRunning Fine-tuned LLM predictions (0/{len(cases)})...", flush=True)
     y_pure = []
     for i, c in enumerate(cases):
         y_pure.append(_pure_llm_predict(runner, c))
@@ -188,8 +207,8 @@ def run_evaluation(model_path: str):
     pure_acc = accuracy_score(y_true, y_pure)
     pure_f1  = f1_score(y_true, y_pure, average="weighted", zero_division=0)
 
-    # Row 3: LLM + Rule merge (production)
-    print(f"\nRunning LLM+Rule predictions (0/{len(cases)})...", flush=True)
+    # Row 3: Fine-tuned LLM + Rule merge (production)
+    print(f"\nRunning Fine-tuned LLM+Rule predictions (0/{len(cases)})...", flush=True)
     y_merge = []
     for i, case in enumerate(cases):
         try:
@@ -207,34 +226,66 @@ def run_evaluation(model_path: str):
     merge_acc = accuracy_score(y_true, y_merge)
     merge_f1  = f1_score(y_true, y_merge, average="weighted", zero_division=0)
 
-    print(f"{'Metric':<25} {'Rule-only':>12} {'Pure LLM':>12} {'LLM+Rule':>12}")
-    print("-" * 64)
-    print(f"{'Accuracy':<25} {rule_acc*100:>11.1f}% {pure_acc*100:>11.1f}% {merge_acc*100:>11.1f}%")
-    print(f"{'F1 (weighted)':<25} {rule_f1*100:>11.1f}% {pure_f1*100:>11.1f}% {merge_f1*100:>11.1f}%")
-    print("=" * 64)
+    # ── Summary table ─────────────────────────────────────────────────────
+    print("\n" + "=" * 76)
+    if y_base is not None:
+        print(f"{'Metric':<25} {'Rule-only':>12} {'Base LLM':>12} {'Fine-tuned':>12} {'Finetuned+Rule':>14}")
+        print("-" * 76)
+        print(f"{'Accuracy':<25} {rule_acc*100:>11.1f}% {base_acc*100:>11.1f}% {pure_acc*100:>11.1f}% {merge_acc*100:>13.1f}%")
+        print(f"{'F1 (weighted)':<25} {rule_f1*100:>11.1f}% {base_f1*100:>11.1f}% {pure_f1*100:>11.1f}% {merge_f1*100:>13.1f}%")
+        delta_acc = pure_acc - base_acc
+        delta_f1  = pure_f1  - base_f1
+        print(f"\n  Fine-tuning delta  →  Accuracy: {delta_acc*100:+.1f}%   F1: {delta_f1*100:+.1f}%")
+    else:
+        print(f"{'Metric':<25} {'Rule-only':>12} {'Fine-tuned':>12} {'Finetuned+Rule':>14}")
+        print("-" * 76)
+        print(f"{'Accuracy':<25} {rule_acc*100:>11.1f}% {pure_acc*100:>11.1f}% {merge_acc*100:>13.1f}%")
+        print(f"{'F1 (weighted)':<25} {rule_f1*100:>11.1f}% {pure_f1*100:>11.1f}% {merge_f1*100:>13.1f}%")
+        if not base_model_path:
+            print("\n  TIP: pass base_model_path= to show fine-tuning delta (Row 0 vs Row 2).")
+    print("=" * 76)
 
-    print("\nDetailed report — Pure LLM (fine-tune in isolation):")
+    if y_base is not None:
+        print("\nDetailed report — Base LLM (no fine-tuning):")
+        print(classification_report(y_true, y_base, labels=["RED", "YELLOW", "GREEN"],
+                                    zero_division=0))
+
+    print("\nDetailed report — Fine-tuned LLM (in isolation):")
     print(classification_report(y_true, y_pure, labels=["RED", "YELLOW", "GREEN"],
                                 zero_division=0))
 
-    print("Detailed report — LLM + Rule safety-net (production path):")
+    print("Detailed report — Fine-tuned LLM + Rule safety-net (production):")
     print(classification_report(y_true, y_merge, labels=["RED", "YELLOW", "GREEN"],
                                 zero_division=0))
 
     # Per-case breakdown
     print("\nPer-case results:")
-    print(f"{'ID':<12} {'Expected':<10} {'Rule':>8} {'Pure':>8} {'Merge':>8} {'Match?':>8}")
-    print("-" * 64)
-    for case, r, p, m in zip(cases, y_rule, y_pure, y_merge):
-        ok = "✓" if m == case["expected_risk"] else "✗"
-        print(f"{case['id']:<12} {case['expected_risk']:<10} {r:>8} {p:>8} {m:>8} {ok:>8}")
+    if y_base is not None:
+        print(f"{'ID':<12} {'Expected':<10} {'Rule':>8} {'Base':>8} {'FT':>8} {'FT+Rule':>8} {'Match?':>8}")
+        print("-" * 76)
+        for case, r, b, p, m in zip(cases, y_rule, y_base, y_pure, y_merge):
+            ok = "✓" if m == case["expected_risk"] else "✗"
+            print(f"{case['id']:<12} {case['expected_risk']:<10} {r:>8} {b:>8} {p:>8} {m:>8} {ok:>8}")
+    else:
+        print(f"{'ID':<12} {'Expected':<10} {'Rule':>8} {'FT':>8} {'FT+Rule':>8} {'Match?':>8}")
+        print("-" * 76)
+        for case, r, p, m in zip(cases, y_rule, y_pure, y_merge):
+            ok = "✓" if m == case["expected_risk"] else "✗"
+            print(f"{case['id']:<12} {case['expected_risk']:<10} {r:>8} {p:>8} {m:>8} {ok:>8}")
 
-    return {
+    results = {
         "rule_accuracy":  rule_acc,  "rule_f1":  rule_f1,
         "pure_accuracy":  pure_acc,  "pure_f1":  pure_f1,
         "merge_accuracy": merge_acc, "merge_f1": merge_f1,
     }
+    if y_base is not None:
+        results.update({"base_accuracy": base_acc, "base_f1": base_f1,
+                        "finetune_delta_acc": pure_acc - base_acc,
+                        "finetune_delta_f1":  pure_f1  - base_f1})
+    return results
 
 
 if __name__ == "__main__":
-    run_evaluation(MODEL_PATH)
+    import sys as _argv_sys
+    _base = _argv_sys.argv[2] if len(_argv_sys.argv) > 2 else None
+    run_evaluation(MODEL_PATH, base_model_path=_base)

@@ -114,26 +114,35 @@ Evaluated on **50 held-out maternal health test cases** spanning six difficulty 
 ### How evaluation works
 
 ```bash
+# Without base model (3-row table)
 python finetune/evaluate_model.py
+
+# With base model for fine-tuning delta (4-row table — recommended)
+python finetune/evaluate_model.py \
+    models/gemma-4-E4B-IT-Q4_K_M-finetuned.gguf \
+    models/gemma-4-E4B-IT-Q4_K_M-base.gguf
 ```
 
-The script runs three independent predictions on every case and prints a full scikit-learn classification report for each:
+The script prints up to four rows plus a full scikit-learn classification report for each LLM path:
 
 ```
-Method              Accuracy    F1 (weighted)
-──────────────────────────────────────────────
-Rule-based only        ?%           ?%
-Pure fine-tuned LLM    ?%           ?%
-LLM + Rule (prod)      ?%           ?%
+Method                  Accuracy    F1 (weighted)
+──────────────────────────────────────────────────
+Rule-based only            ?%           ?%
+Base Gemma 4 E4B           ?%           ?%      ← no fine-tuning
+Fine-tuned LLM             ?%           ?%
+Fine-tuned LLM + Rule      ?%           ?%
 
-Per-class (LLM + Rule — production path):
+Fine-tuning delta  →  Accuracy: +?%   F1: +?%
+
+Per-class (Fine-tuned + Rule — production path):
               precision  recall  f1-score  support
 RED               ?        ?        ?       16
 YELLOW            ?        ?        ?       17
 GREEN             ?        ?        ?       17
 ```
 
-> Download the GGUF model (`./models/download_model.sh`) and run the script to fill in the actual numbers.
+> Download both GGUFs (`./models/download_model.sh`) and run with both paths to see the fine-tuning delta. The delta between **Base LLM** and **Fine-tuned LLM** is the number that proves the LoRA training worked.
 
 ---
 
@@ -141,7 +150,9 @@ GREEN             ?        ?        ?       17
 
 **Rule-based only** — no LLM at all. Runs `assess_danger_signs()` + `classify_risk()` against structured WHO keyword lists. Exposes where the rule system fails: colloquial phrasing ("baby not kicking"), spelling variants ("fetal" vs "foetal"), narrative inputs, and Hindi/Tamil text. This is the baseline floor.
 
-**Pure fine-tuned LLM** — Gemma 4 E4B with no rule merge. Exposes what the fine-tuning actually learned: handling paraphrases, Indic language, and narrative cases that the rule system cannot. This is where training quality is honestly measured.
+**Base Gemma 4 E4B** — the unmodified base GGUF with no LoRA fine-tuning. Shows what general-purpose Gemma 4 achieves on maternal triage without domain-specific training. This is the reference point for the fine-tuning delta.
+
+**Pure fine-tuned LLM** — Gemma 4 E4B + LoRA adapters, no rule merge. Exposes what the fine-tuning actually learned: handling paraphrases, Indic language, and narrative cases that the rule system cannot. The gap between this row and the Base row is the honest measure of training quality.
 
 **LLM + Rule (production path)** — `merge_risk(llm_risk, rule_risk)` returns the higher of the two. This is what Saheli ships. The two metrics that matter most here:
 
@@ -212,7 +223,7 @@ chmod +x models/download_model.sh && ./models/download_model.sh
 
 python run.py          # FastAPI server at http://localhost:5000
 python run.py --cli    # Interactive CLI triage loop
-python run.py --test   # Evaluation benchmark on 20 test cases
+python run.py --test   # Evaluation benchmark on 50 test cases
 ```
 
 ---
@@ -335,7 +346,7 @@ saheli/
 ├── finetune/
 │   ├── prepare_dataset.py          # Generate 1,500 WHO ANC training conversations
 │   ├── train_unsloth.py            # Unsloth LoRA fine-tuning script
-│   ├── evaluate_model.py           # 3-path benchmark: rule / LLM / LLM+rule
+│   ├── evaluate_model.py           # 4-path benchmark: rule / base LLM / fine-tuned / fine-tuned+rule
 │   ├── kaggle_unsloth_train.ipynb  # Kaggle GPU training notebook
 │   ├── colab_unsloth_train.ipynb   # Colab GPU training notebook
 │   └── kaggle_gguf_convert.ipynb   # GGUF export notebook
@@ -355,7 +366,7 @@ saheli/
 └── tests/
     ├── test_triage.py              # TriageEngine unit tests (mocked LLM — no GGUF needed)
     ├── test_functions.py           # Function tool unit tests (all 5 tools)
-    └── sample_cases.json           # 20 evaluation cases: RED × 8, YELLOW × 7, GREEN × 5
+    └── sample_cases.json           # 50 evaluation cases: RED × 16, YELLOW × 17, GREEN × 17
 ```
 
 ---
