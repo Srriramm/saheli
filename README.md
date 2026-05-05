@@ -126,23 +126,21 @@ python finetune/evaluate_model.py \
 The script prints up to four rows plus a full scikit-learn classification report for each LLM path:
 
 ```
-Method                  Accuracy    F1 (weighted)
-──────────────────────────────────────────────────
-Rule-based only            ?%           ?%
-Base Gemma 4 E4B           ?%           ?%      ← no fine-tuning
-Fine-tuned LLM             ?%           ?%
-Fine-tuned LLM + Rule      ?%           ?%
+Metric                   Rule-only   Base LLM  Fine-tuned  Fine-tuned+Rule
+───────────────────────────────────────────────────────────────────────────
+Accuracy                    82.0%      34.0%      58.0%          78.0%
+F1 (weighted)               82.0%      35.9%      58.1%          78.4%
 
-Fine-tuning delta  →  Accuracy: +?%   F1: +?%
+Fine-tuning delta  →  Accuracy: +24.0%   F1: +22.2%
 
 Per-class (Fine-tuned + Rule — production path):
               precision  recall  f1-score  support
-RED               ?        ?        ?       16
-YELLOW            ?        ?        ?       17
-GREEN             ?        ?        ?       17
+RED              1.00     0.89      0.94      18
+YELLOW           0.71     0.79      0.75      19
+GREEN            0.62     0.62      0.62      13
 ```
 
-> Download both GGUFs (`./models/download_model.sh`) and run with both paths to see the fine-tuning delta. The delta between **Base LLM** and **Fine-tuned LLM** is the number that proves the LoRA training worked.
+Evaluated on 50 held-out cases across all six difficulty categories. Results from a single run on CPU with `n_ctx=1024`.
 
 ---
 

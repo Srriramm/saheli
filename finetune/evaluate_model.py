@@ -28,7 +28,7 @@ SYSTEM_PROMPT_EVAL = (
 
 def load_test_cases():
     path = _os.path.join(_project_root, "tests", "sample_cases.json")
-    with open(path, "r") as f:
+    with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 
