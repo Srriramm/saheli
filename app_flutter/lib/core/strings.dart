@@ -175,14 +175,46 @@ class S {
     selectLanguage: 'ಭಾಷೆ ಆಯ್ಕೆಮಾಡಿ',
   );
 
+  static const _hi = S(
+    appBarTitle: 'आशा ट्रायज',
+    patientId: 'रोगी पहचान',
+    patientIdHint: 'उदा. PATIENT-001',
+    typeSymptoms: 'लक्षण लिखें',
+    typeSymptomsHint: 'उदा. 32 सप्ताह गर्भवती, तेज सिरदर्द, धुंधली दृष्टि',
+    analyseSymptoms: 'विश्लेषण करें →',
+    photographSymptoms: 'फ़ोटो लें',
+    viewPatientHistory: '📋  रोगी इतिहास',
+    analysingWithGemma: 'Gemma 4 से विश्लेषण…',
+    dangerSignsDetected: 'खतरे के लक्षण मिले',
+    warningSignsDetected: 'चेतावनी के लक्षण मिले',
+    normalContinueMonitoring: 'सामान्य — निगरानी जारी रखें',
+    aiAssessment: 'AI मूल्यांकन',
+    nextAction: 'अगला कदम',
+    whyThisResult: 'यह परिणाम क्यों?',
+    locationUsed: 'स्थान',
+    gpsLocationUsed: 'वर्तमान GPS स्थान उपयोग किया',
+    fallbackLocationUsed: 'डिफ़ॉल्ट स्थान उपयोग किया',
+    referNow: 'अभी अस्पताल भेजें',
+    continueMonitoring: 'सामान्य निगरानी जारी रखें',
+    dangerSignsFound: 'मिले लक्षण',
+    nearestReferralFacility: 'निकटतम अस्पताल',
+    transcript: 'पाठ',
+    call108: '📞  108 एम्बुलेंस कॉल करें',
+    newPatient: '+ नया रोगी',
+    history: '📋 इतिहास',
+    kmAway: 'किमी दूर',
+    cameraPermission: 'कैमरा अनुमति आवश्यक',
+    locationDisabled: 'स्थान सेवा बंद है',
+    describeSymptomsRequired: 'कृपया रोगी के लक्षण बताएं',
+    selectLanguage: 'भाषा चुनें',
+  );
+
   static S of(String? code) {
     switch (code) {
-      case 'ta':
-        return _ta;
-      case 'kn':
-        return _kn;
-      default:
-        return _en;
+      case 'ta': return _ta;
+      case 'kn': return _kn;
+      case 'hi': return _hi;
+      default:   return _en;
     }
   }
 }

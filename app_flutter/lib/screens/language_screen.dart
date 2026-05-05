@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
+import '../core/prefs.dart';
 import '../widgets/saheli_logo.dart';
 
 class LanguageScreen extends StatelessWidget {
@@ -7,6 +8,7 @@ class LanguageScreen extends StatelessWidget {
 
   static const _languages = [
     {'code': 'ta', 'label': 'Tamil',   'native': 'தமிழ்'},
+    {'code': 'hi', 'label': 'Hindi',   'native': 'हिन्दी'},
     {'code': 'kn', 'label': 'Kannada', 'native': 'ಕನ್ನಡ'},
     {'code': 'en', 'label': 'English', 'native': 'English'},
   ];
@@ -37,7 +39,12 @@ class LanguageScreen extends StatelessWidget {
                   code:   lang['code']!,
                   label:  lang['label']!,
                   native: lang['native']!,
-                  onTap:  () => Navigator.pushReplacementNamed(context, '/triage', arguments: lang['code']),
+                  onTap:  () async {
+                    await saveLanguage(lang['code']!);
+                    if (context.mounted) {
+                      Navigator.pushReplacementNamed(context, '/triage', arguments: lang['code']);
+                    }
+                  },
                 ),
               )),
 

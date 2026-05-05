@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
+import '../core/prefs.dart';
 import '../widgets/saheli_logo.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -39,8 +40,15 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       )
     );
 
-    Future.delayed(const Duration(milliseconds: 2800), () {
-      if (mounted) Navigator.pushReplacementNamed(context, '/language');
+    Future.delayed(const Duration(milliseconds: 2800), () async {
+      if (!mounted) return;
+      final saved = await loadLanguage();
+      if (!mounted) return;
+      if (saved != null) {
+        Navigator.pushReplacementNamed(context, '/triage', arguments: saved);
+      } else {
+        Navigator.pushReplacementNamed(context, '/language');
+      }
     });
   }
 

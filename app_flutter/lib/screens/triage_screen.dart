@@ -91,7 +91,7 @@ class _TriageScreenState extends State<TriageScreen> {
         .showSnackBar(SnackBar(content: Text(msg), backgroundColor: redColor));
   }
 
-  static const _langLabels = {'ta': 'தமிழ்', 'kn': 'ಕನ್ನಡ', 'en': 'English'};
+  static const _langLabels = {'ta': 'தமிழ்', 'hi': 'हिन्दी', 'kn': 'ಕನ್ನಡ', 'en': 'English'};
 
   @override
   Widget build(BuildContext context) {
@@ -118,11 +118,25 @@ class _TriageScreenState extends State<TriageScreen> {
                       GestureDetector(
                         onTap: () => Navigator.pushReplacementNamed(
                             context, '/language'),
-                        child: Text(_langLabels[_language] ?? _language ?? '',
-                            style: const TextStyle(
-                                fontSize: 13,
-                                color: brandColor,
-                                fontWeight: FontWeight.w700)),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: brandColor, width: 1.5),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(_langLabels[_language] ?? _language ?? '',
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      color: brandColor,
+                                      fontWeight: FontWeight.w700)),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.swap_horiz, color: brandColor, size: 14),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
