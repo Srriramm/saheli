@@ -194,6 +194,8 @@ The 82% vs 78% comparison is a test-set artefact — it reflects the proportion 
 
 **Config:** Unsloth LoRA · rank=16 · alpha=32 · target: q_proj, v_proj · 3 epochs · batch=1 · grad accumulation=4 · lr=2e-4 · exported to GGUF Q4_K_M for llama.cpp.
 
+**Fine-tuned model:** [sriramarivazhagan/saheli-gemma4-maternal-health-GGUF](https://huggingface.co/sriramarivazhagan/saheli-gemma4-maternal-health-GGUF) on Hugging Face.
+
 ---
 
 ## Quick Start
