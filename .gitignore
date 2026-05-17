@@ -15,6 +15,11 @@ logs/
 data/uploads/
 assets/uploads/
 
+# Design prototypes — not production code
+assets/*.jsx
+assets/*.html
+studio/
+
 # Secrets
 .env
 
