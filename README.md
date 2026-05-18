@@ -7,7 +7,7 @@
 ![Offline](https://img.shields.io/badge/runs-100%25%20offline-green)
 ![Languages](https://img.shields.io/badge/languages-Tamil%20%7C%20Kannada%20%7C%20Hindi%20%7C%20Telugu%20%7C%20English-purple)
 
-**📹 Demo:** [https://youtu.be/054keDSn4UY](https://youtu.be/054keDSn4UY) · **🤗 Model:** [sriramarivazhagan/saheli-gemma4-maternal-health-GGUF](https://huggingface.co/sriramarivazhagan/saheli-gemma4-maternal-health-GGUF)
+**📹 Demo:** [https://youtu.be/OvuKsI39ykg](https://youtu.be/OvuKsI39ykg) · **🤗 Model:** [sriramarivazhagan/saheli-gemma4-maternal-health-GGUF](https://huggingface.co/sriramarivazhagan/saheli-gemma4-maternal-health-GGUF)
 ![Platform](https://img.shields.io/badge/platform-Android%20%7C%20Raspberry%20Pi-lightgrey)
 
 ---

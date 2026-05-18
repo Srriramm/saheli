@@ -20,6 +20,9 @@ assets/*.jsx
 assets/*.html
 studio/
 
+# Competition writeup — local only, paste manually to Kaggle
+KAGGLE_WRITEUP.md
+
 # Secrets
 .env
 

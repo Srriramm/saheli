@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-// Change this to your laptop's LAN IP
-const baseUrl = 'http://192.168.0.5:5000';
+// Laptop hotspot IP — always 192.168.137.1 on Windows Mobile Hotspot
+const baseUrl = 'http://192.168.137.1:5000';
 
 class TriageResult {
   final String riskLevel;
@@ -14,6 +14,7 @@ class TriageResult {
   final double? latitude;
   final double? longitude;
   final String? recordId;
+  final String? transcript;
 
   TriageResult({
     required this.riskLevel,
@@ -25,6 +26,7 @@ class TriageResult {
     this.latitude,
     this.longitude,
     this.recordId,
+    this.transcript,
   });
 
   factory TriageResult.fromJson(Map<String, dynamic> j) => TriageResult(
@@ -37,6 +39,7 @@ class TriageResult {
         latitude: (j['latitude'] as num?)?.toDouble(),
         longitude: (j['longitude'] as num?)?.toDouble(),
         recordId: j['record_id'],
+        transcript: j['transcript'],
       );
 }
 
